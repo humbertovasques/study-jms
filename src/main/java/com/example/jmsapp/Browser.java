@@ -8,39 +8,43 @@ import javax.jms.Queue;
 import javax.jms.QueueBrowser;
 import javax.jms.Session;
 import javax.jms.TextMessage;
-import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import java.util.Enumeration;
-import java.util.Properties;
-import java.util.Scanner;
 
 public class Browser {
     public static void main(String[] args) throws NamingException, JMSException {
-        Properties properties = new Properties();
-        properties.setProperty("java.naming.factory.initial", "org.apache.activemq.jndi.ActiveMQInitialContextFactory");
-        properties.setProperty("java.naming.provider.url", "tcp://192.168.0.2:61616");
-        properties.setProperty("queue.financeiro", "fila.financeiro");
-        InitialContext ic = new InitialContext(properties);
+        ConnectionFactory factory = ServiceLocator.lookup("ConnectionFactory", ConnectionFactory.class);
+        Destination destination = ServiceLocator.lookup("financeiro", Destination.class);
+        Connection connection = null;
+        Session session = null;
 
-        ConnectionFactory factory = (ConnectionFactory) ic.lookup("ConnectionFactory");
-        Connection connection = factory.createConnection();
-        connection.start();
+        try {
+            connection = factory.createConnection();
+            connection.start();
+            session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
 
-        Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
-        Destination destination = (Destination) ic.lookup("financeiro");
+            QueueBrowser queueBrowser = session.createBrowser((Queue) destination);
+            Enumeration enumeration = queueBrowser.getEnumeration();
 
-        QueueBrowser queueBrowser = session.createBrowser((Queue) destination);
-        Enumeration enumeration = queueBrowser.getEnumeration();
-
-        while (enumeration.hasMoreElements()) {
-            TextMessage textMessage = (TextMessage) enumeration.nextElement();
-            System.out.println(textMessage.getText());
+            while (enumeration.hasMoreElements()) {
+                TextMessage textMessage = (TextMessage) enumeration.nextElement();
+                System.out.println(textMessage.getText());
+            }
+        } finally {
+            if (session != null) {
+                try {
+                    session.close();
+                } catch (JMSException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (connection != null) {
+                try {
+                    connection.close();
+                } catch (JMSException e) {
+                    e.printStackTrace();
+                }
+            }
         }
-
-        new Scanner(System.in).nextLine();
-
-        session.close();
-        connection.close();
-        ic.close();
     }
 }
