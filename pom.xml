@@ -69,11 +69,11 @@
     </repositories>
 
     <dependencies>
-        <dependency>
-            <groupId>org.apache.activemq</groupId>
-            <artifactId>activemq-all</artifactId>
-            <version>${activemq-all.version}</version>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>org.apache.activemq</groupId>-->
+<!--            <artifactId>activemq-all</artifactId>-->
+<!--            <version>${activemq-all.version}</version>-->
+<!--        </dependency>-->
     </dependencies>
 
     <build>
@@ -100,7 +100,7 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <version>${spring-boot-maven-plugin.version}</version>
                 <configuration>
-                    <mainClass>com.example.jmsapp.Browser</mainClass>
+                    <mainClass>com.example.jmsapp.BrowserFila</mainClass>
                 </configuration>
                 <executions>
                     <execution>

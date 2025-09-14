@@ -14,7 +14,7 @@ import javax.naming.NamingException;
 import java.util.Properties;
 import java.util.Scanner;
 
-public class Consumidor {
+public class ConsumidorFila {
     public static void main(String[] args) throws NamingException, JMSException {
         Properties properties = new Properties();
         properties.setProperty("java.naming.factory.initial", "org.apache.activemq.jndi.ActiveMQInitialContextFactory");

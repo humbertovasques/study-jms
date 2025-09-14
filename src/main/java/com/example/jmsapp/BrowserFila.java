@@ -11,7 +11,7 @@ import javax.jms.TextMessage;
 import javax.naming.NamingException;
 import java.util.Enumeration;
 
-public class Browser {
+public class BrowserFila {
     public static void main(String[] args) throws NamingException, JMSException {
         ConnectionFactory factory = ServiceLocator.lookup("ConnectionFactory", ConnectionFactory.class);
         Destination destination = ServiceLocator.lookup("financeiro", Destination.class);

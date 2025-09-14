@@ -12,12 +12,12 @@ import javax.naming.NamingException;
 import java.util.Properties;
 import java.util.Scanner;
 
-public class Produtor {
+public class ProdutorTopico {
     public static void main(String[] args) throws NamingException, JMSException {
         Properties properties = new Properties();
         properties.setProperty("java.naming.factory.initial", "org.apache.activemq.jndi.ActiveMQInitialContextFactory");
         properties.setProperty("java.naming.provider.url", "tcp://192.168.0.2:61616");
-        properties.setProperty("queue.financeiro", "fila.financeiro");
+        properties.setProperty("topic.loja", "topico.loja");
         InitialContext ic = new InitialContext(properties);
 
         ConnectionFactory factory = (ConnectionFactory) ic.lookup("ConnectionFactory");
@@ -25,13 +25,19 @@ public class Produtor {
         connection.start();
 
         Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
-        Destination destination = (Destination) ic.lookup("financeiro");
+        Destination destination = (Destination) ic.lookup("loja");
         MessageProducer producer = session.createProducer(destination);
 
-        for (int i = 0; i < 100; i++) {
-            Message textMessage = session.createTextMessage("Mensagem " + i);
-            producer.send(textMessage);
-        }
+        Message notebook = session.createTextMessage("Produto fisico: notebook. ");
+        producer.send(notebook);
+
+        Message notebookWithProp = session.createTextMessage("Produto fisico com prop digitalProduct=false: notebook. ");
+        notebookWithProp.setBooleanProperty("digitalProduct", false);
+        producer.send(notebookWithProp);
+
+        Message ebook = session.createTextMessage("Produto digital: ebook. ");
+        ebook.setBooleanProperty("digitalProduct", true);
+        producer.send(ebook);
 
         new Scanner(System.in).nextLine();
 
